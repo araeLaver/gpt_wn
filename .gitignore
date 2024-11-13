@@ -7,7 +7,7 @@ logs/
 *.log
 
 # Environment variables
-.env
+backend/.env
 
 # Build files
 build/
