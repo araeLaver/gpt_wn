@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
-
+const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -31,7 +31,20 @@ app.use((req, res, next) => {
 app.use('/api/messages', messageRoutes);
 app.use('/api/conversations', conversationRoutes);
 
-const PORT = process.env.PORT || 5001;
+
+// 정적 파일 제공
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// 모든 경로를 React 앱으로 전달
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+});
+
+// local
+//const PORT = process.env.PORT || 5001;
+
+//koyeb
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log("@Start !!@");
     console.log(`Server is running on port ${PORT}`);
