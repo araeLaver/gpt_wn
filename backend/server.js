@@ -42,10 +42,19 @@ app.use('/api/conversations', conversationRoutes);
 // 정적 파일 제공
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
-// 모든 경로를 React 앱으로 전달
+// API 라우트
+app.use('/api/conversations', require('./routes/conversationRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
+
+// React 애플리케이션의 나머지 경로 처리
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
+
+// // 모든 경로를 React 앱으로 전달
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+// });
 
 // local
 //const PORT = process.env.PORT || 5001;
