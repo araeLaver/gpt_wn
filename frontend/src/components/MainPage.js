@@ -26,7 +26,7 @@ const MainPage = () => {
     // 히스토리 데이터를 API에서 가져오기
     const fetchConversations = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/api/conversations');
+            const response = await axios.get('${API_URL}/api/conversations');
             setConversations(response.data);
         } catch (error) {
             console.error('Error fetching conversations:', error);
@@ -36,7 +36,7 @@ const MainPage = () => {
     // 대화 삭제 요청
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:5001/api/conversations/${id}`);
+            await axios.delete(`${API_URL}/api/conversations/${id}`);
             setConversations((prev) => prev.filter((conv) => conv.id !== id)); // 삭제 후 목록 갱신
         } catch (error) {
             console.error('Error deleting conversation:', error);
@@ -56,14 +56,14 @@ const MainPage = () => {
 
         try {
             // 1. 새로운 대화 생성
-            const conversationResponse = await axios.post('http://localhost:5001/api/conversations', {
+            const conversationResponse = await axios.post('${API_URL}/api/conversations', {
                 title: newMessage, // 첫 메시지를 타이틀로 사용
                 userId: 1, // 예시 사용자 ID
             });
             const conversationId = conversationResponse.data.id;
 
             // 2. 첫 메시지와 함께 GPT API 호출
-            await axios.post('http://localhost:5001/api/messages', {
+            await axios.post('${API_URL}/api/messages', {
                 conversationId,
                 sender: 'user',
                 content: newMessage,
