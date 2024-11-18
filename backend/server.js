@@ -7,7 +7,14 @@ const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const path = require('path');
 const app = express();
-app.use(cors());
+// app.use(cors());
+
+// 백엔드에서 CORS 설정을 추가하여 프론트엔드 도메인을 허용
+app.use(cors({
+    origin: '*', // 특정 프론트엔드 URL로 제한 가능 (예: 'https://<프론트엔드-URL>')
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
+
 app.use(express.json());
 
 // 타임스탬프 로그 헬퍼 함수

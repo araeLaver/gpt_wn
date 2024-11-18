@@ -17,10 +17,14 @@ const DetailPage = () => {
     const [messages, setMessages] = useState([]); // 대화 내역
     const [newMessage, setNewMessage] = useState(''); // 새로운 메시지 입력
 
+    // local
+    // const API_URL = 'http://localhost:5001/';
+    // koyeb
+    const API_URL = process.env.REACT_APP_API_URL;
     // 대화 내역 가져오기
     const fetchMessages = useCallback(async () => {
         try {
-            const response = await axios.get(`http://localhost:5001/api/messages/${conversationId}`);
+            const response = await axios.get(`${API_URL}/api/messages/${conversationId}`);
             setMessages(response.data);
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -36,7 +40,7 @@ const DetailPage = () => {
         if (!newMessage.trim()) return;
 
         try {
-            const response = await axios.post('http://localhost:5001/api/messages', {
+            const response = await axios.post('${API_URL}/api/messages', {
                 conversationId,
                 sender: 'user',
                 content: newMessage,

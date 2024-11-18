@@ -18,6 +18,11 @@ const MainPage = () => {
     const [loading, setLoading] = useState(false); // 로딩 상태
     const navigate = useNavigate();
 
+    // local
+    // const API_URL = 'http://localhost:5001/';
+    // koyeb
+    const API_URL = process.env.REACT_APP_API_URL;
+
     // 히스토리 데이터를 API에서 가져오기
     const fetchConversations = async () => {
         try {
