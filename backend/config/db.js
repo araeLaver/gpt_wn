@@ -12,4 +12,6 @@ const pool = new Pool({
     },
 });
 
-module.exports = pool;
+module.exports = {
+    query: (text, params) => pool.query(text, params), // 쿼리 실행 함수
+};

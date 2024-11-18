@@ -23,6 +23,7 @@ router.get('/:conversationId', async (req, res) => {
 // **Add a new message and get GPT response**
 // 사용자의 메시지를 저장하고, GPT API를 호출한 후 응답을 저장하는 API
 router.post('/', async (req, res) => {
+    console.log("Incoming request body:", req.body);
     const { conversationId, sender, content } = req.body;
 
     // 입력값 검증: conversationId, sender, content가 없을 경우 에러 반환
@@ -32,6 +33,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
+        console.log("Processing new message...");
         console.log(`Received message: "${content}" from sender: "${sender}"`); // 요청 메시지 로그
         logger.info(`Received message: "${content}" from sender: "${sender}"`);
 
@@ -74,6 +76,26 @@ router.post('/', async (req, res) => {
         console.error('Error processing message:', error); // 에러 로그
         logger.error(`Error processing message: ${error.message}`);
         res.status(500).json({ error: 'Failed to process message' }); // 에러 응답
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        console.log(`Deleting conversation with ID: ${req.params.id}`);
+        const { id } = req.params;
+
+        const result = await deleteConversation(id);
+        console.log(`Delete result:`, result);
+
+        if (result.rowCount === 0) {
+            console.warn(`Conversation ID ${id} not found`);
+            return res.status(404).json({ error: 'Conversation not found' });
+        }
+
+        res.status(200).json({ message: 'Conversation deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting conversation:', error.message);
+        res.status(500).json({ error: 'Failed to delete conversation' });
     }
 });
 

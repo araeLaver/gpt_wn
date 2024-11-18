@@ -7,7 +7,7 @@ import {
     Card,
     CardContent,
     Typography,
-    CardActionArea,
+    // CardActionArea,
     TextField,
     Button,
 } from '@mui/material';
@@ -25,6 +25,16 @@ const MainPage = () => {
             setConversations(response.data);
         } catch (error) {
             console.error('Error fetching conversations:', error);
+        }
+    };
+
+    // 대화 삭제 요청
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5001/api/conversations/${id}`);
+            setConversations((prev) => prev.filter((conv) => conv.id !== id)); // 삭제 후 목록 갱신
+        } catch (error) {
+            console.error('Error deleting conversation:', error);
         }
     };
 
@@ -96,7 +106,7 @@ const MainPage = () => {
                     sx={{ marginLeft: 2 }}
                     disabled={loading} // 로딩 중 버튼 비활성화
                 >
-                    Start Chat
+                    Chat
                 </Button>
             </Box>
 
@@ -104,8 +114,7 @@ const MainPage = () => {
             <Grid container spacing={3}>
                 {conversations.map((conversation) => (
                     <Grid item xs={12} sm={6} md={4} key={conversation.id}>
-                        <Card>
-                            <CardActionArea onClick={() => navigate(`/conversation/${conversation.id}`)}>
+                        <Card onClick={() => navigate(`/conversation/${conversation.id}`)} sx={{ cursor: 'pointer' }}>
                                 <CardContent>
                                     <Typography variant="h6">
                                         {conversation.title || 'Untitled'}
@@ -114,8 +123,20 @@ const MainPage = () => {
                                         {new Date(conversation.created_at).toLocaleString()}
                                     </Typography>
                                 </CardContent>
-                            </CardActionArea>
+                                <Box display="flex" justifyContent="flex-end" padding={1}>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Card 클릭 이벤트와 중첩되지 않도록 방지
+                                            handleDelete(conversation.id);
+                                        }}
+                                    >
+                                        Delete
+                                    </Button>
+                                </Box>
                         </Card>
+
                     </Grid>
                 ))}
             </Grid>
@@ -124,3 +145,34 @@ const MainPage = () => {
 };
 
 export default MainPage;
+
+
+
+// <Card>
+// <CardActionArea onClick={() => navigate(`/conversation/${conversation.id}`)}>
+//     <CardContent>
+//         <Typography variant="h6">
+//             {conversation.title || 'Untitled'}
+//         </Typography>
+//         <Typography variant="body2" color="textSecondary">
+//             {new Date(conversation.created_at).toLocaleString()}
+//         </Typography>
+//         <Box display="flex" justifyContent="space-between" marginTop={2}>
+//             {/* <Button
+//                 variant="outlined"
+//                 color="primary"
+//                 onClick={() => navigate(`/conversation/${conversation.id}`)}
+//             >
+//                 Open
+//             </Button> */}
+//             <Button
+//                 variant="outlined"
+//                 color="secondary"
+//                 onClick={() => handleDelete(conversation.id)}
+//             >
+//                 Delete
+//             </Button>
+//         </Box>
+//     </CardContent>
+// </CardActionArea>
+// </Card>

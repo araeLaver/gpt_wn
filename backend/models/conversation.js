@@ -32,9 +32,22 @@ const createConversation = async (title, userId) => {
 //     return rows[0];
 // };
 
+// 특정 대화 삭제
+const deleteConversation = async (id) => {
+    try {
+        const query = 'DELETE FROM gpt.conversations WHERE id = $1';
+        const result = await db.query(query, [id]); // db 객체를 사용하여 쿼리 실행
+        console.log(`Deleted conversation ID: ${id}, Result: ${JSON.stringify(result)}`);
+        return result;
+    } catch (error) {
+        console.error(`Error in deleteConversation: ${error.message}`);
+        throw error; // 에러를 다시 던짐
+    }
+};
 
 module.exports = {
     getAllConversations,
     getConversationById,
     createConversation,
+    deleteConversation,
 };
