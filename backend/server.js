@@ -10,12 +10,20 @@ const app = express();
 // app.use(cors());
 
 // 백엔드에서 CORS 설정을 추가하여 프론트엔드 도메인을 허용
-app.use(cors({
-    origin: '*', // 특정 프론트엔드 URL로 제한 가능 (예: 'https://<프론트엔드-URL>')
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}));
+// app.use(cors({
+//     origin: '*', // 특정 프론트엔드 URL로 제한 가능 (예: 'https://<프론트엔드-URL>')
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+// }));
 
+// CORS 설정
+app.use(cors());
+
+// JSON 요청 처리
 app.use(express.json());
+
+// React 빌드 파일 제공
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
 
 // 타임스탬프 로그 헬퍼 함수
 const logWithTimestamp = (message) => {
@@ -35,8 +43,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/messages', messageRoutes);
-app.use('/api/conversations', conversationRoutes);
+// API 라우트
+app.use('/api/conversations', require('./routes/conversationRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
 
 
 // 정적 파일 제공
