@@ -7,7 +7,9 @@ const {
     deleteConversation,
 } = require('../models/conversation');
 
-const router = express.Router();
+const logger = require('../utils/logger'); // 로깅 유틸리티
+
+const router = express.Router(); // 라우터 생성
 
 // **Get all conversations**
 router.get('/', async (req, res) => {
@@ -52,26 +54,30 @@ router.post('/', async (req, res) => {
     }
 });
 
-// 대화 삭제
+/**
+ * DELETE /api/conversations/:id
+ * 특정 ID를 가진 대화를 삭제하는 API 엔드포인트
+ */
 router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log(`Incoming DELETE request for conversation ID: ${id}`);
+
     try {
-        const { id } = req.params;
-        console.log(`Deleting conversation with ID: ${id}`); // 요청 로그
-
-        const result = await deleteConversation(id); // 삭제 함수 호출
-        console.log(`Delete result: ${JSON.stringify(result)}`);
-
-        if (result.rowCount === 0) {
-            console.warn(`Conversation ID ${id} not found`);
+        const result = await deleteConversation(id);
+        if (!result) {
+            console.log(`No conversation found with ID: ${id}`);
             return res.status(404).json({ error: 'Conversation not found' });
         }
 
-        res.status(200).json({ message: 'Conversation deleted successfully' });
+        console.log(`Deleted conversation with ID: ${result.id}`);
+        res.status(200).json(result);
     } catch (error) {
-        console.error('Error deleting conversation:', error.message);
-        res.status(500).json({ error: 'Failed to delete conversation' });
+        console.error(`Error deleting conversation with ID ${id}: ${error.message}`);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 
 

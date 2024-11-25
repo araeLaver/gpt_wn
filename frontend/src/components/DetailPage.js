@@ -20,7 +20,8 @@ const DetailPage = () => {
     // local
     // const API_URL = 'http://localhost:5001/';
     // koyeb
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+    
     // 대화 내역 가져오기
     const fetchMessages = useCallback(async () => {
         try {
@@ -29,7 +30,7 @@ const DetailPage = () => {
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
-    }, [conversationId]);
+    }, [conversationId, API_URL]); // 'API_URL' 추가
 
     useEffect(() => {
         fetchMessages();
@@ -40,7 +41,7 @@ const DetailPage = () => {
         if (!newMessage.trim()) return;
 
         try {
-            const response = await axios.post('${API_URL}/api/messages', {
+            const response = await axios.post(`${API_URL}/api/messages`, {
                 conversationId,
                 sender: 'user',
                 content: newMessage,

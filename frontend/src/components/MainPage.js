@@ -12,6 +12,8 @@ import {
     Button,
 } from '@mui/material';
 
+import { useCallback } from 'react';
+
 const MainPage = () => {
     const [conversations, setConversations] = useState([]); // 히스토리 데이터
     const [newMessage, setNewMessage] = useState(''); // 새 메시지 입력
@@ -21,32 +23,36 @@ const MainPage = () => {
     // local
     // const API_URL = 'http://localhost:5001/';
     // koyeb
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
     // 히스토리 데이터를 API에서 가져오기
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
+        console.log('API_URL:', API_URL);
         try {
-            const response = await axios.get('${API_URL}/api/conversations');
+            const response = await axios.get(`${API_URL}/api/conversations`);
             setConversations(response.data);
         } catch (error) {
             console.error('Error fetching conversations:', error);
         }
-    };
+    }, [API_URL]); // API_URL을 의존성으로 추가
 
     // 대화 삭제 요청
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`${API_URL}/api/conversations/${id}`);
-            setConversations((prev) => prev.filter((conv) => conv.id !== id)); // 삭제 후 목록 갱신
+            console.log(`Attempting to delete conversation with ID: ${id}`);
+            const response = await axios.delete(`${API_URL}/api/conversations/${id}`);
+            console.log(`Deleted conversation:`, response.data);
+    
+            setConversations((prev) => prev.filter((conv) => conv.id !== id));
         } catch (error) {
-            console.error('Error deleting conversation:', error);
+            console.error(`Error deleting conversation with ID ${id}:`, error.response?.data || error.message);
         }
     };
 
     // 페이지 로드 시 히스토리 데이터를 가져옴
     useEffect(() => {
         fetchConversations();
-    }, []);
+    }, [fetchConversations]); // useCallback으로 감싸진 함수는 의존성 배열에 안전하게 추가 가능
 
     // 새로운 대화 시작 및 GPT 호출
     const handleStartChat = async () => {
@@ -56,14 +62,14 @@ const MainPage = () => {
 
         try {
             // 1. 새로운 대화 생성
-            const conversationResponse = await axios.post('${API_URL}/api/conversations', {
+            const conversationResponse = await axios.post(`${API_URL}/api/conversations`, {
                 title: newMessage, // 첫 메시지를 타이틀로 사용
                 userId: 1, // 예시 사용자 ID
             });
             const conversationId = conversationResponse.data.id;
 
             // 2. 첫 메시지와 함께 GPT API 호출
-            await axios.post('${API_URL}/api/messages', {
+            await axios.post(`${API_URL}/api/messages`, {
                 conversationId,
                 sender: 'user',
                 content: newMessage,
