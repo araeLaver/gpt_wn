@@ -11,6 +11,8 @@ const conversationRoutes = require('./routes/conversationRoutes'); // 대화 관
 const path = require('path'); // 파일 및 디렉터리 경로 작업을 위한 모듈
 const app = express(); // Express 앱 생성
 
+const fs = require('fs');
+
 // **CORS 설정**: 프론트엔드가 다른 도메인에서 API 호출할 수 있도록 허용
 app.use(cors());
 
@@ -60,7 +62,8 @@ app.get('*', (req, res) => {
     if (fs.existsSync(reactIndexPath)) {
         res.sendFile(reactIndexPath); // React 앱의 index.html 반환
     } else {
-        res.status(404).send('React build files not found');
+        console.error('React build files not found');
+        res.status(500).send('React build files not found');
     }
 });
 
