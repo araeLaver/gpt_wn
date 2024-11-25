@@ -50,8 +50,18 @@ app.use('/api/messages', messageRoutes);
 
 // **React 애플리케이션 라우팅 처리**
 // 나머지 모든 경로를 React의 `index.html` 파일로 전달
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+// });
+
+// React 애플리케이션의 나머지 경로 처리
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+    const reactIndexPath = path.join(__dirname, '../frontend/build/index.html');
+    if (fs.existsSync(reactIndexPath)) {
+        res.sendFile(reactIndexPath); // React 앱의 index.html 반환
+    } else {
+        res.status(404).send('React build files not found');
+    }
 });
 
 // **서버 포트 설정**
